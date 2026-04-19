@@ -1,0 +1,45 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block title %}Planteer{% endblock %}
+{% block extra_head %}{% endblock %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Planteer</h1>
+        <p class="hero-subtitle">Plant Database For Plants Lovers</p>
+        
+        <form class="hero-search" method="GET" action="#">
+            <input type="text" class="search-input" placeholder="Search For Plant ..." name="q">
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+    </div>
+</section>
+
+<section class="latest-plants-section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Plants</h2>
+            <p class="section-subtitle">Learn more about plants</p>
+        </div>
+        <a class="section-more" href="{% url 'plants:all_plants' %}">More <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="plants-grid">
+        {% for plant in latest_plants %}
+            <article class="plant-card">
+                <div class="plant-card-image-wrap">
+                    <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="plant-card-image">
+                </div>
+                <h3 class="plant-card-title">{{ plant.name }}</h3>
+                <p class="plant-card-about">{{ plant.about|truncatechars:70 }}</p>
+                <p class="plant-card-category">{{ plant.category }}</p>
+            </article>
+        {% empty %}
+            <p class="empty-state">No plants yet. Add your first plant to see it here.</p>
+        {% endfor %}
+    </div>
+</section>
+
+
+{% endblock %}

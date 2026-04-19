@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% block title %}All Plants{% endblock %}
+
+{% block content %}
+<section class="latest-plants-section">
+    <div class="section-header">
+        <div>
+            <h1 class="section-title">All Plants</h1>
+            <p class="section-subtitle">Browse every plant in the database</p>
+        </div>
+    </div>
+
+    <div class="plants-grid">
+        {% for plant in plants %}
+            <article class="plant-card">
+                <div class="plant-card-image-wrap">
+                    <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="plant-card-image">
+                </div>
+                <h2 class="plant-card-title">{{ plant.name }}</h2>
+                <p class="plant-card-about">{{ plant.about|truncatechars:90 }}</p>
+                <p class="plant-card-category">{{ plant.category }}</p>
+            </article>
+        {% empty %}
+            <p class="empty-state">No plants available yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
