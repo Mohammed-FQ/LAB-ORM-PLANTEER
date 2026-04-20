@@ -216,6 +216,318 @@ body {
     }
 }
 
+/* Contact Messages Page */
+.messages-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.message-card {
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.message-card-icon {
+    font-size: 1.6rem;
+    color: #9ca3af;
+    margin-bottom: 0.3rem;
+}
+
+.message-card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #111;
+}
+
+.message-card-email {
+    color: #0ea5e9;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.message-card-email:hover {
+    text-decoration: underline;
+}
+
+.message-card-text {
+    margin: 0.5rem 0 0;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .messages-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Contact Page */
+.contact-section {
+    display: flex;
+    gap: 4rem;
+    align-items: stretch;
+    margin: 3rem 0 4rem;
+}
+
+.contact-form-side {
+    flex: 1;
+    min-width: 280px;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.contact-subtitle {
+    color: #6b7280;
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.contact-row .contact-field {
+    flex: 1;
+}
+
+.contact-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 0.3rem;
+}
+
+.contact-input {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-bottom: 1.5px solid #d1d5db;
+    border-radius: 0;
+    font-size: 0.95rem;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.contact-input:focus {
+    border-bottom-color: #000;
+}
+
+.contact-error {
+    color: #dc2626;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* reuse same style for plant forms */
+.text-danger.small {
+    color: #dc2626 !important;
+    font-size: 0.8rem;
+}
+
+.contact-textarea {
+    resize: none;
+    height: 110px;
+}
+
+.contact-submit {
+    margin-top: 1rem;
+    padding: 0.85rem;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.contact-submit:hover {
+    background: #333;
+}
+
+.contact-image-side {
+    flex: 1;
+    min-width: 280px;
+}
+
+.contact-image {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+    .contact-section {
+        flex-direction: column;
+    }
+    .contact-image-side {
+        flex: 0 0 100%;
+        width: 100%;
+    }
+    .contact-image {
+        height: 240px;
+    }
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+    padding: 0.4rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid #d1d5db;
+    background: #fff;
+    color: #333;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    border-color: #333;
+    color: #000;
+}
+
+.filter-btn--active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.filter-btn--edible.filter-btn--active {
+    background: #065f46;
+    border-color: #065f46;
+    color: #fff;
+}
+
+/* Plant Detail Page */
+.plant-detail-section {
+    display: flex;
+    gap: 3rem;
+    margin: 3rem 0 2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.plant-detail-image-wrap {
+    flex: 0 0 380px;
+    width: 380px;
+    height: 380px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.plant-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.plant-detail-info {
+    flex: 1;
+    min-width: 240px;
+}
+
+.plant-detail-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+}
+
+.plant-detail-meta {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.8rem;
+}
+
+.plant-detail-badge {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.plant-detail-badge--edible {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.plant-detail-badge--not-edible {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.plant-detail-block {
+    margin-bottom: 1.5rem;
+}
+
+.plant-detail-block-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+    color: #111;
+}
+
+.plant-detail-block-text {
+    margin: 0;
+    color: #555;
+    line-height: 1.7;
+}
+
+.plant-detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .plant-detail-image-wrap {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 260px;
+    }
+}
+
 /* Footer */
 .site-footer {
     padding: 3rem 3rem;

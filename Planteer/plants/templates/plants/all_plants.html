@@ -6,12 +6,26 @@
     <div class="section-header">
         <div>
             <h1 class="section-title">All Plants</h1>
-            <p class="section-subtitle">Browse every plant in the database</p>
+            <p class="section-subtitle">{{ plants|length }} plant{{ plants|length|pluralize }} found</p>
         </div>
+    </div>
+
+    <div class="filter-bar">
+        <a href="{% url 'plants:all_plants' %}"
+           class="filter-btn {% if not active_category and not active_edible %}filter-btn--active{% endif %}">All</a>
+
+        {% for cat in categories %}
+            <a href="?category={{ cat }}{% if active_edible %}&edible={{ active_edible }}{% endif %}"
+               class="filter-btn {% if active_category == cat %}filter-btn--active{% endif %}">{{ cat }}</a>
+        {% endfor %}
+
+        <a href="?{% if active_category %}category={{ active_category }}&{% endif %}{% if active_edible != 'true' %}edible=true{% endif %}"
+           class="filter-btn filter-btn--edible {% if active_edible == 'true' %}filter-btn--active{% endif %}">Edible</a>
     </div>
 
     <div class="plants-grid">
         {% for plant in plants %}
+            <a href="{% url 'plants:plant_detail' plant.pk %}" style="text-decoration:none; color:inherit;">
             <article class="plant-card">
                 <div class="plant-card-image-wrap">
                     <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="plant-card-image">
@@ -20,8 +34,9 @@
                 <p class="plant-card-about">{{ plant.about|truncatechars:90 }}</p>
                 <p class="plant-card-category">{{ plant.category }}</p>
             </article>
+            </a>
         {% empty %}
-            <p class="empty-state">No plants available yet.</p>
+            <p class="empty-state">No plants match the selected filters.</p>
         {% endfor %}
     </div>
 </section>

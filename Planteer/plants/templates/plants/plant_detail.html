@@ -1,0 +1,87 @@
+{% extends "main/base.html" %}
+{% block title %}{{ plant.name }}{% endblock %}
+
+{% block content %}
+
+<div class="plant-detail-section">
+    <div class="plant-detail-image-wrap">
+        <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="plant-detail-image">
+    </div>
+
+    <div class="plant-detail-info">
+        <h1 class="plant-detail-title">{{ plant.name }}</h1>
+
+        <div class="plant-detail-meta">
+            <span class="plant-detail-badge">{{ plant.category }}</span>
+            {% if plant.is_edible %}
+                <span class="plant-detail-badge plant-detail-badge--edible">Edible</span>
+            {% else %}
+                <span class="plant-detail-badge plant-detail-badge--not-edible">Not Edible</span>
+            {% endif %}
+        </div>
+
+        <div class="plant-detail-block">
+            <h3 class="plant-detail-block-title">About</h3>
+            <p class="plant-detail-block-text">{{ plant.about }}</p>
+        </div>
+
+        <div class="plant-detail-block">
+            <h3 class="plant-detail-block-title">Used For</h3>
+            <p class="plant-detail-block-text">{{ plant.used_for }}</p>
+        </div>
+
+        <div class="plant-detail-actions">
+            <a href="{% url 'plants:update_plant' plant.pk %}" class="btn btn-dark">Update</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Plant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong>{{ plant.name }}</strong>? This cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'plants:delete_plant' plant.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if related %}
+<section class="latest-plants-section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Related Plants</h2>
+            <p class="section-subtitle">More {{ plant.category }} plants</p>
+        </div>
+    </div>
+    <div class="plants-grid">
+        {% for p in related %}
+            <a href="{% url 'plants:plant_detail' p.pk %}" style="text-decoration:none; color:inherit;">
+            <article class="plant-card">
+                <div class="plant-card-image-wrap">
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}" class="plant-card-image">
+                </div>
+                <h3 class="plant-card-title">{{ p.name }}</h3>
+                <p class="plant-card-about">{{ p.about|truncatechars:70 }}</p>
+                <p class="plant-card-category">{{ p.category }}</p>
+            </article>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
