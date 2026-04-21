@@ -1,66 +1,135 @@
-from django.shortcuts import get_object_or_404, redirect, render
-
+from django.http import HttpRequest
+from django.shortcuts import redirect, render, get_object_or_404
+import os
 from .forms import PlantForm
-from .models import Plant
+from .models import Category, Plant, Comment, Country
+
+from django.shortcuts import render, redirect
+from django.http import HttpRequest
+from .models import Plant, Category, Country
 
 
-def search_view(request):
-	query = request.GET.get('q', '').strip()
-	plants = Plant.objects.filter(name__icontains=query).order_by('-created_at') if query else Plant.objects.none()
-	return render(request, 'plants/search.html', {'plants': plants, 'query': query})
+def add_plant_view(request: HttpRequest):
 
-# Create your views here.
-def plant_detail_view(request, pk):
-	plant = get_object_or_404(Plant, pk=pk)
-	related = Plant.objects.filter(category=plant.category).exclude(pk=pk)[:3]
-	return render(request, 'plants/plant_detail.html', {'plant': plant, 'related': related})
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        about = request.POST.get('about')
+        used_for = request.POST.get('used_for')
+        is_edible = request.POST.get('is_edible') == 'on'
+
+        category_ids = request.POST.getlist('categories')
+        country_ids = request.POST.getlist('countries')
+        image = request.FILES.get('image')
+
+        new_plant = Plant.objects.create(
+            name=name,
+            about=about,
+            used_for=used_for,
+            is_edible=is_edible,
+            image=image
+        )
+        new_plant.categories.set(category_ids)
+        new_plant.countries.set(country_ids)
+
+        return redirect('plants:all_plants_view', 'all')
+
+    categories = Category.objects.all()
+    countries = Country.objects.all()
+
+    return render(request, 'plants/add_plant.html', {
+        'categories': categories,
+        'countries': countries
+    })
+
+def all_plants_view(request: HttpRequest, category_name: str):
+
+    categories = Category.objects.all()
+    countries = Country.objects.all()
+
+    selected_categories = request.GET.getlist('category')
+    selected_country = request.GET.get('country')
+    edible = request.GET.get('edible')
+
+    plants = Plant.objects.all().order_by('-created_at')
+
+    if selected_categories:
+        plants = plants.filter(
+            categories__name__in=selected_categories
+        ).distinct()
+    if selected_country:
+        plants = plants.filter(
+            countries__id=int(selected_country)
+        ).distinct()
+    if edible == 'true':
+        plants = plants.filter(is_edible=True)
+    elif edible == 'false':
+        plants = plants.filter(is_edible=False)
+
+    return render(request, 'plants/all_plants.html', {
+        'plants': plants,
+        'categories': categories,
+        'countries': countries,
+        'selected_categories': selected_categories,
+        'selected_country': selected_country,
+        'edible': edible,
+    })
+
+def plant_detail_view(request:HttpRequest, plant_id:int):
+    plant = get_object_or_404(Plant, pk=plant_id)
+    related = Plant.objects.filter(categories__in=plant.categories.all()).exclude(pk=plant_id)[:3]
+    comments = plant.comments.order_by('-created_at')
+    if request.method == 'POST' and 'comment_submit' in request.POST:
+        name = request.POST.get('name')
+        comment_text = request.POST.get('comment')
+        if name and comment_text:
+            Comment.objects.create(plant=plant, name=name, comment=comment_text)
+        return redirect('plants:plant_detail_view', plant_id=plant.id)
+    return render(request, 'plants/plant_detail.html', {"plant" : plant, "related": related, "comments": comments})
+
+def plant_update_view(request:HttpRequest, plant_id:int):
+
+    plant = Plant.objects.get(pk=plant_id)
+    categories = Category.objects.all()
+    countries = Country.objects.all()
+
+    if request.method == "POST":
+        plant_form = PlantForm(instance=plant, data=request.POST, files=request.FILES)
+        if plant_form.is_valid():
+            plant_form.save()
+        else:
+            print(plant_form.errors)
+    
+        return redirect("plants:plant_detail_view", plant_id=plant.id)
+
+    return render(request, "plants/update_plant.html", {"plant":plant, "categories" : categories, "countries": countries})
 
 
-def all_plants_view(request):
-	plants = Plant.objects.all().order_by('-created_at')
-	category = request.GET.get('category', '')
-	edible = request.GET.get('edible', '')
-	if category:
-		plants = plants.filter(category=category)
-	if edible == 'true':
-		plants = plants.filter(is_edible=True)
-	categories = ['Fruit', 'Vegetable', 'Herb', 'Flower', 'Tree']
-	return render(request, 'plants/all_plants.html', {
-		'plants': plants,
-		'active_category': category,
-		'active_edible': edible,
-		'categories': categories,
-	})
+def plant_delete_view(request: HttpRequest, plant_id: int):
+    plant = Plant.objects.get(pk=plant_id)
+    plant.delete()
+    return redirect('plants:all_plants_view', category_name='all')
 
+def search_plants_view(request:HttpRequest):
+    categories = Category.objects.all()
+    selected_categories = request.GET.getlist('category')
+    edible = request.GET.get('edible')
 
-def add_plant_view(request):
-	if request.method == 'POST':
-		form = PlantForm(request.POST, request.FILES)
-		if form.is_valid():
-			form.save()
-			return redirect('plants:all_plants')
-	else:
-		form = PlantForm()
+    if "search" in request.GET and len(request.GET["search"]) >= 3:
+        plants = Plant.objects.filter(name__contains=request.GET["search"]).order_by("-created_at")
+    else:
+        plants = Plant.objects.none()
 
-	return render(request, 'plants/add_plant.html', {'form': form})
+    if selected_categories:
+        plants = plants.filter(categories__name__in=selected_categories).distinct()
 
+    if edible == 'true':
+        plants = plants.filter(is_edible=True)
+    elif edible == 'false':
+        plants = plants.filter(is_edible=False)
 
-def update_plant_view(request, pk):
-	plant = get_object_or_404(Plant, pk=pk)
-	if request.method == 'POST':
-		form = PlantForm(request.POST, request.FILES, instance=plant)
-		if form.is_valid():
-			form.save()
-			return redirect('plants:plant_detail', pk=plant.pk)
-	else:
-		form = PlantForm(instance=plant)
-
-	return render(request, 'plants/update_plant.html', {'form': form, 'plant': plant})
-
-
-def delete_plant_view(request, pk):
-	plant = get_object_or_404(Plant, pk=pk)
-	if request.method == 'POST':
-		plant.delete()
-		return redirect('plants:all_plants')
-	return redirect('plants:plant_detail', pk=pk)
+    return render(request, "plants/search_plants.html", {
+        "plants": plants,
+        "categories": categories,
+        "selected_categories": selected_categories,
+        "edible": edible,
+    })

@@ -1,87 +1,90 @@
-{% extends "main/base.html" %}
-{% block title %}{{ plant.name }}{% endblock %}
+{% extends 'main/base.html' %}
+
+
+{% block title %}{{plant.name}} Page{% endblock %}
 
 {% block content %}
-
-<div class="plant-detail-section">
-    <div class="plant-detail-image-wrap">
-        <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="plant-detail-image">
+<div class="d-flex align-items-center gap-3 flex-wrap mt-2 justify-content-between">
+    <h1 class="mb-0">{{plant.name}}</h1>
+    <div class="d-flex flex-wrap gap-1 mt-1 position-relative justify-content-center">
+        <h6 class="mb-0 text-secondary">Native Countries: </h6>
+        {% for country in plant.countries.all %}
+            <a href="{% url 'plants:all_plants_view' 'all' %}?country={{ country.id }}" style="z-index:1;">
+            <img src="{{ country.flag_url }}" alt="{{ country.name }}" title="{{ country.name }}" style="width:24px; height:18px; margin-right:2px; border-radius:2px; border:1px solid #eee; " />
+            </a>
+        {% endfor %}
     </div>
-
-    <div class="plant-detail-info">
-        <h1 class="plant-detail-title">{{ plant.name }}</h1>
-
-        <div class="plant-detail-meta">
-            <span class="plant-detail-badge">{{ plant.category }}</span>
-            {% if plant.is_edible %}
-                <span class="plant-detail-badge plant-detail-badge--edible">Edible</span>
-            {% else %}
-                <span class="plant-detail-badge plant-detail-badge--not-edible">Not Edible</span>
-            {% endif %}
-        </div>
-
-        <div class="plant-detail-block">
-            <h3 class="plant-detail-block-title">About</h3>
-            <p class="plant-detail-block-text">{{ plant.about }}</p>
-        </div>
-
-        <div class="plant-detail-block">
-            <h3 class="plant-detail-block-title">Used For</h3>
-            <p class="plant-detail-block-text">{{ plant.used_for }}</p>
-        </div>
-
-        <div class="plant-detail-actions">
-            <a href="{% url 'plants:update_plant' plant.pk %}" class="btn btn-dark">Update</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
-        </div>
+    <div class="d-flex gap-2 flex-wrap">
+        {% for category in plant.categories.all %}
+        <a href="{% url 'plants:all_plants_view' 'all' %}?category={{ category.name }}"><h6 class="cat p-2 ps-3 pe-3 rounded-pill text-white {{category}} mb-0">{{ category }}</h6></a>
+        {% endfor %}
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Delete Plant</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="row g-4 mt-2">
+    <div class="col-12 col-md-5">
+        <img src="{{ plant.image.url }}" class="w-100 rounded-3 object-fit-cover" style="max-height:450px;" />
+    </div>
+    <div class="col-12 col-md-7">
+        <div class="d-flex flex-column gap-3">
+
+            <div>
+                <h6 class="fw-semibold text-secondary mb-1">About</h6>
+                <p class="mb-0">{{ plant.about }}</p>
             </div>
-            <div class="modal-body">
-                Are you sure you want to delete <strong>{{ plant.name }}</strong>? This cannot be undone.
+
+            <div>
+                <h6 class="fw-semibold text-secondary mb-1">Used For</h6>
+                <p class="mb-0">{{ plant.used_for }}</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" action="{% url 'plants:delete_plant' plant.pk %}">
+
+            <div>
+                <h6 class="fw-semibold text-secondary mb-1">Added On</h6>
+                <p class="mb-0">{{ plant.created_at }}</p>
+            </div>
+
+            <div class="d-flex gap-2 mt-2">
+                <a href="{% url 'plants:plant_update_view' plant.id %}" class="btn btn-primary">Update</a>
+                <form method="post" action="{% url 'plants:plant_delete_view' plant.id %}" onsubmit="return confirm('Are you sure you want to delete this plant?')">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
 
-{% if related %}
-<section class="latest-plants-section">
-    <div class="section-header">
-        <div>
-            <h2 class="section-title">Related Plants</h2>
-            <p class="section-subtitle">More {{ plant.category }} plants</p>
+<hr />
+
+<!-- Comments Section -->
+<div class="mt-5">
+    <h3>Comments</h3>
+    <div>
+        {% for c in comments %}
+        <div class="border-bottom pb-2 mb-3">
+            <div class="fw-semibold">{{ c.name }} <span class="text-secondary" style="font-size:0.9em;">{{ c.created_at }}</span></div>
+            <div>{{ c.comment }}</div>
         </div>
-    </div>
-    <div class="plants-grid">
-        {% for p in related %}
-            <a href="{% url 'plants:plant_detail' p.pk %}" style="text-decoration:none; color:inherit;">
-            <article class="plant-card">
-                <div class="plant-card-image-wrap">
-                    <img src="{{ p.image.url }}" alt="{{ p.name }}" class="plant-card-image">
-                </div>
-                <h3 class="plant-card-title">{{ p.name }}</h3>
-                <p class="plant-card-about">{{ p.about|truncatechars:70 }}</p>
-                <p class="plant-card-category">{{ p.category }}</p>
-            </article>
-            </a>
+        {% empty %}
+        <p class="text-secondary">No comments yet.</p>
         {% endfor %}
+        <form method="post" class="mb-4 border rounded-3 p-3" style="max-width:500px;" autocomplete="off">
+        {% csrf_token %}
+        <input type="hidden" name="comment_submit" value="1" />
+        <div class="mb-2">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" name="name" id="name" class="form-control" required maxlength="1024" />
+        </div>
+        <div class="mb-2">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea name="comment" id="comment" class="form-control" required rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Comment</button>
+    </form>
     </div>
-</section>
-{% endif %}
+</div>
+<h5 class="my-4">Related Plants</h5>
+{% include 'plants/plant_list.html' with plants=related only %}
 
 {% endblock %}
