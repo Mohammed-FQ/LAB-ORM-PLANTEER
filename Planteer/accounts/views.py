@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
+import os
 
 
 
@@ -18,12 +21,20 @@ def sign_up(request: HttpRequest):
         try:
             new_user = User.objects.create_user(username=request.POST["username"],password=request.POST["password"],email=request.POST["email"], first_name=request.POST["first_name"], last_name=request.POST["last_name"])
             new_user.save()
+            #send confirmation email
+            sign_up_html = render_to_string("accounts/mail/confirmation.html", {
+                "user_name": new_user.username
+            })
+            send_to = new_user.email
+            email_message = EmailMessage("confiramation", sign_up_html, settings.EMAIL_HOST_USER, [send_to])
+            email_message.content_subtype = "html"
+            #email_message.connection = email_message.get_connection(True)
+            email_message.send()
             messages.success(request, "Registered User Successfuly", "alert-success")
             return redirect("accounts:sign_in")
         except Exception as e:
             print(e)
     
-
     return render(request, "accounts/signup.html", {})
 
 
