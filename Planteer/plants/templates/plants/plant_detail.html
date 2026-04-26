@@ -42,7 +42,7 @@
                 <h6 class="fw-semibold text-secondary mb-1">Added On</h6>
                 <p class="mb-0">{{ plant.created_at }}</p>
             </div>
-
+            {% if request.user.is_staff %}
             <div class="d-flex gap-2 mt-2">
                 <a href="{% url 'plants:plant_update_view' plant.id %}" class="btn btn-primary">Update</a>
                 <form method="post" action="{% url 'plants:plant_delete_view' plant.id %}" onsubmit="return confirm('Are you sure you want to delete this plant?')">
@@ -50,6 +50,7 @@
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>
+            {% endif %}
 
         </div>
     </div>
@@ -63,25 +64,32 @@
     <div>
         {% for c in comments %}
         <div class="border-bottom pb-2 my-3">
-            <div class="fw-semibold">{{ c.name }} <span class="text-secondary" style="font-size:0.9em;">{{ c.created_at }}</span></div>
+            <div class="fw-semibold">{{ c.user }} <span class="text-secondary" style="font-size:0.9em;">{{ c.created_at }}</span></div>
             <div>{{ c.comment }}</div>
         </div>
         {% empty %}
         <p class="text-secondary">No comments yet.</p>
         {% endfor %}
-        <form method="post" class="my-5 border rounded-3 p-3" style="max-width:500px;" autocomplete="off">
-        {% csrf_token %}
-        <input type="hidden" name="comment_submit" value="1" />
-        <div class="mb-2">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" name="name" id="name" class="form-control" required maxlength="1024" />
-        </div>
-        <div class="mb-2">
-            <label for="comment" class="form-label">Comment</label>
-            <textarea name="comment" id="comment" class="form-control" required rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary bg-black border-0 mt-3">Add Comment</button>
-    </form>
+    </div>
+    <div>
+        {% if request.user.is_authenticated %}
+        <h2 class='mt-5'> Add Comment </h2>
+        <form method="post" class="my-5 border rounded-3 p-3" style="max-width:800px;" autocomplete="off">
+            {% csrf_token %}
+            <input type="hidden" name="comment_submit" value="1" />
+            <div class="mb-2">
+                <label for="comment" class="form-label">Comment</label>
+                <textarea name="comment" id="comment" class="form-control" required rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary bg-black border-0 mt-3">Add Comment</button>
+        </form>
+        {% else %}
+            <div class='p-3 rounded bg-warning mt-4 d-flex flex-column gap-2'>
+                <P>
+                    Must sign in to add comment
+                </p>
+            <div>
+        {% endif %}
     </div>
 </div>
 <h5 class="my-4">Related Plants</h5>

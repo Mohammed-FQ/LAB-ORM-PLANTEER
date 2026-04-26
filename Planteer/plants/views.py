@@ -3,14 +3,12 @@ from django.shortcuts import redirect, render, get_object_or_404
 import os
 from .forms import PlantForm
 from .models import Category, Plant, Comment, Country
-
-from django.shortcuts import render, redirect
-from django.http import HttpRequest
-from .models import Plant, Category, Country
-
+from django.contrib import messages
 
 def add_plant_view(request: HttpRequest):
-
+    if not request.user.is_staff:
+        messages.success(request, "only staff can add plants", "alert-warning")
+        return redirect('main:home_view')
     if request.method == 'POST':
         name = request.POST.get('name')
         about = request.POST.get('about')
@@ -77,18 +75,19 @@ def all_plants_view(request: HttpRequest, category_name: str):
 def plant_detail_view(request:HttpRequest, plant_id:int):
     plant = get_object_or_404(Plant, pk=plant_id)
     related = Plant.objects.filter(categories__in=plant.categories.all()).exclude(pk=plant_id)[:3]
-    comments = plant.comments.order_by('-created_at')
+    comments = plant.plant_comments.order_by('-created_at')
     if request.method == 'POST' and 'comment_submit' in request.POST:
-        name = request.POST.get('name')
         comment_text = request.POST.get('comment')
-        if name and comment_text:
-            Comment.objects.create(plant=plant, name=name, comment=comment_text)
+        if comment_text:
+            Comment.objects.create(plant=plant, user=request.user, comment=comment_text)
         return redirect('plants:plant_detail_view', plant_id=plant.id)
     return render(request, 'plants/plant_detail.html', {"plant" : plant, "related": related, "comments": comments})
 
 def plant_update_view(request:HttpRequest, plant_id:int):
-
     plant = Plant.objects.get(pk=plant_id)
+    if not request.user.is_staff:
+        messages.success(request, "only staff can edit plants", "alert-warning")
+        return redirect("plants:plant_detail_view", plant_id=plant.id)
     categories = Category.objects.all()
     countries = Country.objects.all()
 
@@ -105,7 +104,11 @@ def plant_update_view(request:HttpRequest, plant_id:int):
 
 
 def plant_delete_view(request: HttpRequest, plant_id: int):
+    
     plant = Plant.objects.get(pk=plant_id)
+    if not request.user.is_staff:
+        messages.success(request, "only staff can edit plants", "alert-warning")
+        return redirect("plants:plant_detail_view", plant_id=plant.id)
     plant.delete()
     return redirect('plants:all_plants_view', category_name='all')
 

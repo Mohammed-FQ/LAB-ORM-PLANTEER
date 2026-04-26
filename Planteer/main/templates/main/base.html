@@ -38,9 +38,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'main:contact_view' %}">Contact Us</a>
                         </li>
+                        {% if request.user.is_staff %}
                         <li class="nav-item">
                             <a class="btn btn-primary bg-black text-white px-3 border-0" href="{% url 'plants:add_plant_view' %}">Add Plant</a>
                         </li>
+                        {% endif %}
                         <li class="nav-item">
 
                 {% if request.user.is_authenticated %}

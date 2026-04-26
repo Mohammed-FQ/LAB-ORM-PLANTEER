@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 class Category(models.Model):
     name = models.CharField(max_length=128, unique=True)
     def __str__(self) -> str:
@@ -28,8 +28,8 @@ class Plant(models.Model):
         return self.name
     
 class Comment(models.Model):
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name="comments")
-    name = models.CharField(max_length=1024)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, related_name="plant_comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments")
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self) -> str:
