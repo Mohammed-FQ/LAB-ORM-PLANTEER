@@ -43,7 +43,7 @@ about: Lavender (Lavandula) is a genus of 47 species of perennial flowering plan
 used_for: Lavender is used commercially to produce essential oil for perfumes, cosmetics, and aromatherapy products. It is also used as a culinary herb to flavour teas and desserts, and has traditional applications in medicine for promoting relaxation and relieving minor skin irritations.
 image: /flowers/lavender.jpg
 Category: Flower
-Country: Spain, France, Italy, Greece, Lebanon, Israel
+Country: Spain, France, Italy, Greece, Lebanon
 is_edible: True
 
 Name: Apple
