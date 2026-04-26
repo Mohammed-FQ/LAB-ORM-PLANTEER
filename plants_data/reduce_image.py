@@ -20,3 +20,4 @@ for subdir, dirs, files in os.walk(root_folder):
             img.save(output_path, "WEBP", quality=80)
 
             print(f"Converted: {input_path} → {output_path}")
+
