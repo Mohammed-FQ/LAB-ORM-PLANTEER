@@ -1,11 +1,11 @@
 from PIL import Image
 import os
 
-root_folder = "plants_data/images"  # adjust if needed
+root_folder = "plants_data/convert"  # adjust if needed
 
 for subdir, dirs, files in os.walk(root_folder):
     for file in files:
-        if file.lower().endswith((".jpg", ".jpeg", ".png")):
+        if file.lower().endswith((".jpg", ".jpeg", ".png", ".svg")):
             input_path = os.path.join(subdir, file)
 
             # create output path (same folder, new format)

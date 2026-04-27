@@ -14,6 +14,7 @@
                     </a>
                 {% endfor %}
                 </div>
+                <div class="d-flex flex-row justify-content-between">
                 <div class="d-flex flex-wrap gap-1 mt-1 position-relative">
                 {% for country in plant.countries.all %}
                     <a href="{% url 'plants:all_plants_view' 'all' %}?country={{ country.id }}" style="z-index:1;">
@@ -21,6 +22,11 @@
                     </a>
                 {% endfor %}
                 </div>
+                <div class="d-flex align-items-center gap-1">
+                <h5 class="m-0 p-0 fs-6">{{ plant.plant_comments.count }}</h5>
+                <span class="material-symbols-outlined fs-6">chat_bubble</span>
+                </div>
+            </div>
             </article>
         {% empty %}
             <p class="empty-state">No plants yet. Add your first plant to see it here.</p>

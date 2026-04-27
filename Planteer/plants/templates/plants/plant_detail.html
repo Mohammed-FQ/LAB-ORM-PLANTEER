@@ -64,7 +64,7 @@
     <div>
         {% for c in comments %}
         <div class="border-bottom pb-2 my-3">
-            <div class="fw-semibold">{{ c.user }} <span class="text-secondary" style="font-size:0.9em;">{{ c.created_at }}</span></div>
+            <div class="fw-semibold"><a href="{% url 'accounts:user_profile_view' c.user.username %}">{{ c.user }}</a> <span class="text-secondary" style="font-size:0.9em;">{{ c.created_at }}</span></div>
             <div>{{ c.comment }}</div>
         </div>
         {% empty %}

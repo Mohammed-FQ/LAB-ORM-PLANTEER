@@ -19,7 +19,7 @@ class Plant(models.Model):
     name = models.CharField(max_length=1024)
     about = models.TextField()
     used_for = models.TextField()
-    image = models.ImageField(upload_to="images/", default="images/default.jpg")
+    image = models.ImageField(upload_to="images/", default="images/default.webp")
     categories = models.ManyToManyField(Category)
     is_edible = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
